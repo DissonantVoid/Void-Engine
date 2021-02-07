@@ -10,6 +10,7 @@ namespace VEngine
 		static Window& init() { static Window instance; return instance; }
 
 		sf::RenderWindow& getWindow();
+		void setFullScreen(bool fullScreen);
 
 	private:
 		sf::RenderWindow window;

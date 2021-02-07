@@ -13,6 +13,7 @@ namespace VEngine
 
 			bool addFont(std::string name, sf::Font* font);
 			bool addFont(std::string name, std::string path);
+			bool duplicateFont(std::string originalName, std::string newName);
 			bool isFont(std::string name);
 			const sf::Font* getFont(std::string name);
 			bool removeFont(std::string name);

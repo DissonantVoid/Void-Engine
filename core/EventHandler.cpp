@@ -5,12 +5,14 @@
 #include "Engine/event/EventQueue.h"
 
 #include "Engine/debug/ProfilerSample.h"
+#include "Engine/debug/Logger.h"
 
 namespace VEngine
 {
 	void EventHandler::handleEvents()
 	{
 		VE_PROFILE_FUNC;
+
 		while (window->pollEvent(event)) //a copy of the event is stored in a vector, when all events are prosseced we send all the copies at once to the event queue so the client can access them as well
 		{
 			switch (event.type)

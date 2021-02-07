@@ -11,6 +11,14 @@ namespace VEngine
 		bool AudioHandler::addSound(std::string name, sf::SoundBuffer* buffer)
 		{
 			VE_PROFILE_FUNC;
+
+			if (buffer == nullptr)
+			{
+				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to add sound buffer with name: " + name + ", it's nullptr (texture is now deleted)", true);
+				delete buffer;
+				return false;
+			}
+
 			if (soundBuffers.find(name) != soundBuffers.end())
 			{
 				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to add sound buffer with name: " + name + ", name already exist (buffer is now deleted)", true);
@@ -61,6 +69,46 @@ namespace VEngine
 			std::string* pathHeap = new std::string;
 			*pathHeap = path;
 			musicPaths.emplace(std::make_pair(name, pathHeap));
+			return true;
+		}
+
+		bool AudioHandler::duplicateSound(std::string originalName, std::string newName)
+		{
+			VE_PROFILE_FUNC;
+			if (soundBuffers.find(originalName) != soundBuffers.end())
+			{
+				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to duplicate sound with names: " + originalName + " - " + newName + ", originalName already exist", true);
+				return false;
+			}
+
+			if (soundBuffers.find(newName) != soundBuffers.end())
+			{
+				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to duplicate sound with names: " + originalName + " - " + newName + ", newName already exist", true);
+				return false;
+			}
+
+			sf::SoundBuffer* sound = new sf::SoundBuffer(*soundBuffers.find(originalName)->second);
+			soundBuffers.emplace(std::make_pair(newName, sound));
+			return true;
+		}
+
+		bool AudioHandler::duplicateMusic(std::string originalName, std::string newName)
+		{
+			VE_PROFILE_FUNC;
+			if (musicPaths.find(originalName) != musicPaths.end())
+			{
+				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to duplicate music with names: " + originalName + " - " + newName + ", originalName already exist", true);
+				return false;
+			}
+
+			if (musicPaths.find(newName) != musicPaths.end())
+			{
+				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to duplicate music with names: " + originalName + " - " + newName + ", newName already exist", true);
+				return false;
+			}
+
+			std::string* musicPath = new std::string(*musicPaths.find(originalName)->second);
+			musicPaths.emplace(std::make_pair(newName, musicPath));
 			return true;
 		}
 

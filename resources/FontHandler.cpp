@@ -10,6 +10,14 @@ namespace VEngine
 		bool FontHandler::addFont(std::string name, sf::Font* font)
 		{
 			VE_PROFILE_FUNC;
+
+			if (font == nullptr)
+			{
+				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to add font with name: " + name + ", it's nullptr (texture is now deleted)", true);
+				delete font;
+				return false;
+			}
+
 			if (fonts.find(name) != fonts.end())
 			{
 				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to add font with name: " + name + ", name already exist (font is now deleted)", true);
@@ -38,6 +46,26 @@ namespace VEngine
 			}
 
 			fonts.emplace(std::make_pair(name, font));
+			return true;
+		}
+
+		bool FontHandler::duplicateFont(std::string originalName, std::string newName)
+		{
+			VE_PROFILE_FUNC;
+			if (fonts.find(originalName) != fonts.end())
+			{
+				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to duplicate font with names: " + originalName + " - " + newName + ", originalName already exist", true);
+				return false;
+			}
+
+			if (fonts.find(newName) != fonts.end())
+			{
+				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to duplicate font with names: " + originalName + " - " + newName + ", newName already exist", true);
+				return false;
+			}
+
+			sf::Font* font = new sf::Font(*fonts.find(originalName)->second);
+			fonts.emplace(std::make_pair(newName, font));
 			return true;
 		}
 

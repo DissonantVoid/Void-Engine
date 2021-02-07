@@ -11,6 +11,14 @@ namespace VEngine
 		bool TextureHandler::addTexture(std::string name, sf::Texture* texture)
 		{
 			VE_PROFILE_FUNC;
+
+			if (texture == nullptr)
+			{
+				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to add texture with name: " + name + ", it's nullptr (texture is now deleted)", true);
+				delete texture;
+				return false;
+			}
+
 			if (textures.find(name) != textures.end())
 			{
 				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to add texture with name: " + name + ", name already exist (texture is now deleted)", true);
@@ -39,6 +47,26 @@ namespace VEngine
 			}
 
 			textures.emplace(std::make_pair(name,texture));
+			return true;
+		}
+
+		bool TextureHandler::duplicateTexture(std::string originalName, std::string newName)
+		{
+			VE_PROFILE_FUNC;
+			if (textures.find(originalName) != textures.end())
+			{
+				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to duplicate texture with names: " + originalName + " - " + newName + ", originalName already exist", true);
+				return false;
+			}
+
+			if (textures.find(newName) != textures.end())
+			{
+				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to duplicate texture with names: " + originalName + " - " + newName + ", newName already exist", true);
+				return false;
+			}
+
+			sf::Texture* texture = new sf::Texture(*textures.find(originalName)->second);
+			textures.emplace(std::make_pair(newName,texture));
 			return true;
 		}
 

@@ -4,11 +4,6 @@
 
 namespace VEngine
 {
-	Event::Event()
-	{
-
-	}
-
 	Event::Event(EventType type)
 		: Type(type)
 	{

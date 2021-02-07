@@ -1,29 +1,42 @@
 #pragma once
 
+#include <map>
+
 #include "SFML/Graphics.hpp"
+
 #include "Engine/scene/entities/Entity.h"
 #include "Engine/resources/AnimationHandler.h"
 
 namespace VEngine
 {
-	class ParticlesEntity : public sf::Transformable ,public Entity
+	class ParticlesEntity : public Entity //TODO seperate particle class into 2 derived classes, one animated and the other not
 	{
 		struct particle
 		{
-			particle(sf::Texture* texture): isStatic(true) {};
-			particle(Resources::animation* animation): isStatic(false) {};
+			particle();
+			~particle();
 
+			void setSprite(const sf::Texture* texture);
+			void setSprite(const Resources::animation* animation);
+			void set(sf::Vector2f position, sf::Vector2f direction, float speed, float lifeTime, sf::Uint8 drawLayer);
 			void update();
 
-			sf::Vector2f direction;
+
+			sf::Vector2f direction; //between -1 / 1
 			float speed;
 			float lifeTime;
-			sf::Clock animationClock;
 			sf::Clock lifeClock;
-			bool isStatic;
+			sf::Uint8 drawLayer;
+			bool shouldErase = false;
+
 			sf::Sprite sprite;
-			sf::Texture* texture;
-			Resources::animation* animation;
+
+			const Resources::animation* animation;
+			sf::Clock animationClock;
+			unsigned int currentAnimIndex = 0;
+			sf::Vector2f currentOffset;
+			bool isAnimated;
+			bool isAnimFinished = false;
 		};
 
 	public:
@@ -36,12 +49,14 @@ namespace VEngine
 		};
 
 		ParticlesEntity();
-
 		~ParticlesEntity();
 
-		void setParticles(const sf::Texture* texture);
-		void setParticles(const Resources::animation* animation);
+		void addTexture(std::string name,const sf::Texture* texture);
+		void removeTexture(std::string name);
+		void addAnimation(std::string name,const Resources::animation* animation);
+		void removeAnimation(std::string name);
 
+		void setAnimated(bool isAnimated);
 		void setSpeed(float speed);
 		void setSpeed(float min, float max);
 		void setLifeTime(float lifeTime);
@@ -50,20 +65,18 @@ namespace VEngine
 		void setEmitionType(emitionType type);
 		void setEmitionDir(float x, float y); //this work with directional and cone types
 
-		bool isAnimated();
-		void imit(sf::Uint32 amount); //don't clear particles here
+		void imit(sf::Uint16 amount,sf::Vector2f position,sf::Uint8 layer);
 
 		void start() override;
-		void update() override;// don't forget the position
+		void update() override;
 		void handleEvent(Event event) override;
 
 	private:
-		//TODO: support for multiple textures/animations randomly assigned
-		//what if the texture is changed while some particles are still using it ?
 		std::vector<particle> particles;
-		const sf::Texture* texture;
-		const Resources::animation* animation;
-		
+		std::map<std::string,const sf::Texture*> textures; // it's fine to not keep a refrence counting or anything like that because we can remove a texture from here even if a particle is using it as long as it's still valid in the resource::textureHandler
+		std::map<std::string,const Resources::animation*> animations;
+		bool isAnimatedVar;
+
 		bool isSpeedRange;
 		float speedMin;
 		float speedMax;
@@ -73,7 +86,7 @@ namespace VEngine
 		float lifeTimeMax;
 
 		sf::Vector2f offset; //additional x,y offset which is add to the direction randomly between 0.xy and offset.xy, can be used for example in straight direction mode to add randomization
-		emitionType currentEmType;
-		sf::Vector2f direction;
+		emitionType currentEmType = emitionType::directional;
+		sf::Vector2f direction; //between -1 / 1
 	};
 }

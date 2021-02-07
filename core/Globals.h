@@ -6,7 +6,7 @@ namespace VEngine
 	{
 		extern float deltaTime;
 		extern unsigned int FPS;
-
+		extern unsigned int AVERAGE_FPS;
 		
 	}
 }

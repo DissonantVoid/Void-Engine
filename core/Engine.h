@@ -22,6 +22,8 @@ namespace VEngine
 
 		sf::Clock dtClock;
 		sf::Clock fpsClock;
+		unsigned int previousFps[5];
+		unsigned int prevFpsIndex = 0;
 
 		Engine();
 		~Engine();

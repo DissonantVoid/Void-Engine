@@ -12,6 +12,6 @@
 #define VE_FILE_LOG true
 
 #define VE_PROFILER false
-#define VE_PROFILER_DEBUG_ONLY false
+#define VE_PROFILER_DEBUG_ONLY true
 
 #define VE_MULTITHREADING false //unused yet

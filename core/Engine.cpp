@@ -80,9 +80,17 @@ namespace VEngine
 		while (isRunning)
 		{
 			Global::deltaTime = dtClock.restart().asSeconds();
+			framesPerSecond++;
 			if (fpsClock.getElapsedTime().asSeconds() >= 1)
 			{
 				Global::FPS = framesPerSecond;
+				
+				previousFps[prevFpsIndex] = framesPerSecond;
+				if(++prevFpsIndex > 5) prevFpsIndex = 0;
+				int prevFpsSum = 0;
+				for (int i = 0; i < 5; i++) prevFpsSum += previousFps[i];
+				Global::AVERAGE_FPS = prevFpsSum / 5;
+
 				framesPerSecond = 0;
 				fpsClock.restart();
 			}
@@ -95,11 +103,9 @@ namespace VEngine
 			EventQueue::init().handleEvents();
 
 			Renderer::init().draw();
-			framesPerSecond++;
 		}
 
 		Debug::Profiler::init().logToFile();
-
 		Debug::Logger::init().Log(Debug::Logger::Type::info, "Shuting down the Engine...", true);
 	}
 }

@@ -13,51 +13,58 @@ namespace VEngine
 {
 	namespace Util
 	{
-
-		bool ParseFileAnimation(std::string path,Resources::animation* animation);
-
 		//get persentage out of value in a range
 		template<typename T>
 		static int valToPercent(T value, T min, T max)
 		{
-
+			return (value - min) / (max - min);
 		}
 
 		//get value out of persentage in a range
 		template<typename T>
 		static int percentToVal(T percentage, T min, T max)
 		{
-			
+			return ((max - min) * percentage) + min;
 		}
 
-		//vector calculations: normalizing...
+		//distance
 		template<typename T>
 		static float vecDistance(sf::Vector2<T> start, sf::Vector2<T> end)
 		{
 			sf::Vector2<T> result;
-			result.x = std::abs((end.x - start.x) * (end.x - start.x));
-			result.y = std::abs((end.y - start.y) * (end.y - start.y));
+			result.x = (end.x - start.x) * (end.x - start.x);
+			result.y = (end.y - start.y) * (end.y - start.y);
 			return std::sqrt(result.x + result.y);
 		}
 
+		//normal
 		template<typename T>
-		static sf::Vector2<T> vecNormal(sf::Vector2<T> start, sf::Vector2<T> end)
+		static sf::Vector2<T> vecNormal(sf::Vector2<T> vec)
 		{
-			float distance = vecDistance<T>(start,end);
-
+			float distance = vecDistance<T>(sf::Vector2<T>(0,0), vec);
+			return sf::Vector2<T>((vec.x / distance) * (vec.x / distance),
+								  (vec.y / distance) * (vec.y / distance));
 		}
 
 		//dotproduct
-		//Cross Product
+		template<typename T>
+		static int vecDotProd(sf::Vector2<T> first, sf::Vector2<T> second)
+		{
+			return (first.x * second.x) + (first.y * second.y);
+		}
 
 		//lerp
-		static float lerp(...);
+		template<typename T>
+		static float lerp(T value, T min, T max)
+		{
+			
+		}
 
 		//value mapping
 		template<typename T>
-		static int mapValue(T value, T min, T max, T newMin, T newMax)
+		static T mapValue(T value, T min, T max, T newMin, T newMax)
 		{
-
+			return (value - min) * (newMax - newMin) / (max - min) + newMin;
 		}
 	}
 }

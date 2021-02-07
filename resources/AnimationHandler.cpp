@@ -2,7 +2,7 @@
 
 #include "Engine/resources/TextureHandler.h"
 #include "Engine/debug/Logger.h"
-#include "Engine/util/Utility.h"
+#include "Engine/util/Parser.h"
 
 #include "Engine/debug/ProfilerSample.h"
 
@@ -13,6 +13,13 @@ namespace VEngine
 		bool AnimationHandler::addAnimation(std::string name, animation* animation)
 		{
 			VE_PROFILE_FUNC;
+
+			if (animation == nullptr)
+			{
+				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to add animation with name: " + name + ", it's nullptr (texture is now deleted)", true);
+				delete animation;
+				return false;
+			}
 
 			if (animations.find(name) != animations.end())
 			{
@@ -60,6 +67,26 @@ namespace VEngine
 			}
 
 			animations.emplace(std::make_pair(name, anim));
+			return true;
+		}
+
+		bool AnimationHandler::duplicateTexture(std::string originalName, std::string newName)
+		{
+			VE_PROFILE_FUNC;
+			if (animations.find(originalName) != animations.end())
+			{
+				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to duplicate animation with names: " + originalName + " - " + newName + ", originalName already exist", true);
+				return false;
+			}
+
+			if (animations.find(newName) != animations.end())
+			{
+				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to duplicate animation with names: " + originalName + " - " + newName + ", newName already exist", true);
+				return false;
+			}
+
+			animation* aniamtion = new animation(*animations.find(originalName)->second);
+			animations.emplace(std::make_pair(newName, aniamtion));
 			return true;
 		}
 

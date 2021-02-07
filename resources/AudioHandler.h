@@ -14,6 +14,8 @@ namespace VEngine
 			bool addSound(std::string name, sf::SoundBuffer* buffer);
 			bool addSound(std::string name, std::string path);
 			bool addMusic(std::string name, std::string path);
+			bool duplicateSound(std::string originalName, std::string newName);
+			bool duplicateMusic(std::string originalName, std::string newName);
 			bool isSound(std::string name);
 			bool isMusic(std::string name);
 			const sf::SoundBuffer* getSound(std::string name);

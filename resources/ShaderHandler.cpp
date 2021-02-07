@@ -10,6 +10,14 @@ namespace VEngine
 		bool ShaderHandler::addShader(std::string name, sf::Shader* shader)
 		{
 			VE_PROFILE_FUNC;
+
+			if (shader == nullptr)
+			{
+				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to add shader with name: " + name + ", it's nullptr (texture is now deleted)", true);
+				delete shader;
+				return false;
+			}
+
 			if (shaders.find(name) != shaders.end())
 			{
 				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to add shader with name: " + name + ", name already exist (shader is now deleted)", true);

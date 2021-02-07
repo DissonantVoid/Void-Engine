@@ -19,6 +19,8 @@ namespace VEngine
 			float getFloat();
 			float getFloat(float min,float max);
 
+			bool getBool();
+
 			//random seaquence
 
 		private:

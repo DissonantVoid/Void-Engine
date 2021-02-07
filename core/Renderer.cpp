@@ -25,6 +25,7 @@ namespace VEngine
 		{
 			if (drawables.top().drawable == nullptr) Debug::Logger::init().Log(Debug::Logger::Type::warning, "renderer drawable is nullptr", true);
 			else window->draw(*drawables.top().drawable, drawables.top().states);
+			
 			drawables.pop();
 		}
 

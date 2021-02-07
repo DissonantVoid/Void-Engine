@@ -47,7 +47,6 @@ namespace VEngine
 		sfmlStruct sfmlEvent;
 		costumStruct costumEvent;
 
-		Event();
 		Event(EventType type);
 	
 		void submite();

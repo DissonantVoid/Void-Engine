@@ -4,9 +4,10 @@
 #include "Engine/debug/ProfilerSample.h"
 #include "Engine/core/Window.h"
 
+#include "Engine/Config.h"
+
 namespace VEngine
 {
-
 	void SceneHandler::update()
 	{
 		VE_PROFILE_FUNC;

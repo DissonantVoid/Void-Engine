@@ -30,6 +30,7 @@ namespace VEngine
 			bool addAnimation(std::string name, animation* animation);//should be heap "new" allocated
 			bool addAnimation(std::string name, bool isLoop, std::vector<animFrame> frames);
 			bool addAnimation(std::string name,std::string path);
+			bool duplicateTexture(std::string originalName, std::string newName);
 			bool isAnimation(std::string name);
 			const animation* getAnimation(std::string name);
 			animation* getAnimationMd(std::string name);
