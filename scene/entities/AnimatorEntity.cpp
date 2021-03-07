@@ -27,9 +27,10 @@ namespace VEngine
 	{
 		for (auto& object : animObjects)
 		{
+			object.second->animatedSprite->update();
 			if (object.second->shouldDraw == true)
 			{
-				Event event(Event::EventType::RendererDraw);
+				Event event(Event::EventType::EngineRendererDraw);
 				event.drawEvent.drawable = object.second->animatedSprite;
 				event.drawEvent.drawLayer = object.second->drawLayer;
 				event.drawEvent.renderState = object.second->renderState;
@@ -47,13 +48,13 @@ namespace VEngine
 	{
 		if (animatedObject == nullptr)
 		{
-			Debug::Logger::init().Log(Debug::Logger::Type::warning, "animatorEntity couldn't add object with name: " + name + " ,it is nullptr", true);
+			Debug::Logger::init().Log(Debug::Logger::Type::error, "animatorEntity couldn't add object with name: " + name + " ,it is nullptr", true);
 			return false;
 		}
 
 		if (animObjects.find(name) != animObjects.end())
 		{
-			Debug::Logger::init().Log(Debug::Logger::Type::warning, "animatorEntity couldn't add object with name: " + name + " ,name already exist (drawable is now deleted)", true);
+			Debug::Logger::init().Log(Debug::Logger::Type::error, "animatorEntity couldn't add object with name: " + name + " ,name already exist (drawable is now deleted)", true);
 			delete animatedObject;
 			return false;
 		}
@@ -68,7 +69,7 @@ namespace VEngine
 		auto result = animObjects.find(name);
 		if (result == animObjects.end())
 		{
-			Debug::Logger::init().Log(Debug::Logger::Type::warning, "animatorEntity couldn't remove object with name: " + name + " ,name doesn't exist", true);
+			Debug::Logger::init().Log(Debug::Logger::Type::error, "animatorEntity couldn't remove object with name: " + name + " ,name doesn't exist", true);
 			return false;
 		}
 
@@ -78,12 +79,24 @@ namespace VEngine
 		return true;
 	}
 
-	bool AnimatorEntity::isValid(std::string name)
+	bool AnimatorEntity::isValid(std::string name)const
 	{
 		return (animObjects.find(name) != animObjects.end());
 	}
 
-	AnimatorEntity::animationData* AnimatorEntity::getDrawableData(std::string name)
+	AnimSprite* AnimatorEntity::getAnimatedDrawable(std::string name) const
+	{
+		auto result = animObjects.find(name);
+		if (result == animObjects.end())
+		{
+			Debug::Logger::init().Log(Debug::Logger::Type::warning, "animatorEntity couldn't get animated drawable with name: " + name + " ,name doesn't exist", true);
+			return nullptr;
+		}
+
+		return result->second->animatedSprite;
+	}
+
+	AnimatorEntity::animationData* AnimatorEntity::getDrawableData(std::string name) const
 	{
 		auto result = animObjects.find(name);
 		if (result == animObjects.end())

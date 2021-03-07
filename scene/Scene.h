@@ -3,13 +3,14 @@
 #include <unordered_map>
 #include "SFML/Graphics.hpp"
 #include "Engine/core/Globals.h"
+#include "Engine/debug/ProfilerSample.h"
 #include "Engine/scene/entities/Entity.h"
 #include "Engine/debug/Logger.h"
 #include "Engine/event/Event.h"
 
 namespace VEngine
 {
-	class Scene //NOTE: the base class will clean entities
+	class Scene : public sf::NonCopyable
 	{
 		friend class SceneHandler;
 	public:
@@ -28,21 +29,27 @@ namespace VEngine
 		template<typename as>
 		as* getEntity(std::string name)
 		{
-			Entity* entity = entities.find(name)->second;
-			if (entity == nullptr)
-			{
-				Debug::Logger::init().Log(Debug::Logger::Type::warning, "entity with name: " + name + " doesn't exist in the scene named: " + this->name, true);
-				return nullptr;
-			}
-			if (dynamic_cast<as*>(entity) == nullptr)
-			{
-				Debug::Logger::init().Log(Debug::Logger::Type::warning, "couldn't cast " + this->name + " into the given type, it wasen't originaly of that type", true);
-				return nullptr;
-			}
-			return dynamic_cast<as*>(entity);
-		}
+			VE_PROFILE_FUNC;
+			
+			Entity* entity = getEntity(name);
+			if (entity == nullptr) return nullptr;
 
+			as* castedEntity = dynamic_cast<as*>(entity);
+			if (castedEntity != nullptr)
+			{
+				return castedEntity;
+			}
+			else
+			{
+				Debug::Logger::init().Log(Debug::Logger::Type::warning, "couldn't cast " + this->name + " into the given type, it isn't of that type", true);
+				return nullptr;
+			}
+			
+		}
+		Entity* getEntity(std::string name);
 		bool removeEntity(std::string name);
+
+		sf::View& getView();
 
 	protected:
 		std::unordered_map<std::string, Entity*> entities;

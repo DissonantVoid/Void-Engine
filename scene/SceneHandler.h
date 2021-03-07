@@ -16,8 +16,8 @@ namespace VEngine
 		bool pushScene(std::string name,Scene* scene); //NOTE: the pointer must be heap allocated + is cleaned automaticaly in case of failure
 		Scene* getScene(std::string name);
 		Scene* getCurrentScene();
-		bool isScene(std::string name);
-		bool isCurrentScene(std::string name);
+		bool isScene(std::string name)const;
+		bool isCurrentScene(std::string name)const;
 		bool removeScene(std::string name);
 		bool switchScene(std::string name);
 		

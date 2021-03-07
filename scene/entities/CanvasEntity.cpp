@@ -29,7 +29,7 @@ namespace VEngine
 		{
 			if (drawable.second->shouldDraw == true)
 			{
-				Event event(Event::EventType::RendererDraw);
+				Event event(Event::EventType::EngineRendererDraw);
 				event.drawEvent.drawable = drawable.second->drawable;
 				event.drawEvent.drawLayer = drawable.second->drawLayer;
 				event.drawEvent.renderState = drawable.second->renderState;
@@ -43,17 +43,17 @@ namespace VEngine
 
 	}
 
-	bool CanvasEntity::addDrawable(std::string name, sf::Drawable* drawable, sf::Uint8 drawLayer, bool hide, sf::RenderStates states)
+	bool CanvasEntity::addDrawable(const std::string& name, sf::Drawable* drawable, sf::Uint8 drawLayer, bool hide, sf::RenderStates states)
 	{
 		if (drawable == nullptr)
 		{
-			Debug::Logger::init().Log(Debug::Logger::Type::warning, "canvasEntity couldn't add drawable with name: " + name + " ,it is nullptr " , true);
+			Debug::Logger::init().Log(Debug::Logger::Type::error, "canvasEntity couldn't add drawable with name: " + name + " ,it is nullptr " , true);
 			return false;
 		}
 
 		if (drawables.find(name) != drawables.end())
 		{
-			Debug::Logger::init().Log(Debug::Logger::Type::warning, "canvasEntity couldn't add drawable with name: " + name + " ,name already exist (drawable is now deleted)", true);
+			Debug::Logger::init().Log(Debug::Logger::Type::error, "canvasEntity couldn't add drawable with name: " + name + " ,name already exist (drawable is now deleted)", true);
 			delete drawable;
 			return false;
 		}
@@ -63,12 +63,12 @@ namespace VEngine
 		return true;
 	}
 
-	bool CanvasEntity::removeDrawable(std::string name)
+	bool CanvasEntity::removeDrawable(const std::string& name)
 	{
 		auto result = drawables.find(name);
 		if (result == drawables.end())
 		{
-			Debug::Logger::init().Log(Debug::Logger::Type::warning, "canvasEntity couldn't remove drawable with name: " + name + " ,name doesn't exist", true);
+			Debug::Logger::init().Log(Debug::Logger::Type::error, "canvasEntity couldn't remove drawable with name: " + name + " ,name doesn't exist", true);
 			return false;
 		}
 
@@ -78,12 +78,12 @@ namespace VEngine
 		return true;
 	}
 
-	bool CanvasEntity::isValid(std::string name)
+	bool CanvasEntity::isValid(const std::string& name)const
 	{
 		return (drawables.find(name) != drawables.end());
 	}
 
-	CanvasEntity::canvasDrawData* CanvasEntity::getDrawableData(std::string name)
+	CanvasEntity::canvasDrawData* CanvasEntity::getDrawableData(const std::string& name) const
 	{
 		auto result = drawables.find(name);
 		if (result == drawables.end())

@@ -24,31 +24,34 @@ namespace VEngine
 			if (animIndex >= animations[currentAnim]->frames.size())
 			{
 				if (animations[currentAnim]->isLoop)
+				{
 					animIndex = 0;
+				}
 				else
 				{
 					isPlayingVar = false;
-					sprite.setPosition(0, 0);
 				}
+				sprite.move(-currentOffset);
+				currentOffset = sf::Vector2f(0,0);
 				return;
 			}
 
 			sprite.setTexture(*animations[currentAnim]->frames[animIndex].texture,true);
 			
-			sprite.setPosition(0,0);//sprite transform shouldn't be changed since we feed our transform to the draw function which will be set to the sprite, but since after applying offset this.transform we wont be able to go back, it makes sense to add the offset to the sprite and remove it when the frame is over aka next frame
-			sprite.move(animations[currentAnim]->frames[animIndex].offset);
+			sprite.move(-currentOffset);
+			currentOffset = animations[currentAnim]->frames[animIndex].offset;
+			sprite.move(currentOffset);
 			
 			animIndex++;
 			clock.restart();
 		}
 	}
 
-	bool AnimSprite::addAnimation(std::string name,Resources::animation* animation)
+	bool AnimSprite::addAnimation(const std::string& name,const animation* animation)
 	{
 		if (animations.find(name) != animations.end())
 		{
-			Debug::Logger::init().Log(Debug::Logger::Type::warning,"couldn't add animation with name: " + name + " ,name already exist (anim is now deleted)",true);
-			delete animation;
+			Debug::Logger::init().Log(Debug::Logger::Type::error,"couldn't add animation with name: " + name + " ,name already exist",true);
 			return false;
 		}
 		
@@ -56,18 +59,18 @@ namespace VEngine
 		return true;
 	}
 
-	bool AnimSprite::removeAnimation(std::string name)
+	bool AnimSprite::removeAnimation(const std::string& name)
 	{
 		auto result = animations.find(name);
 		if (result == animations.end())
 		{
-			Debug::Logger::init().Log(Debug::Logger::Type::warning, "couldn't remove animation with name: " + name + " ,name doesn't exist", true);
+			Debug::Logger::init().Log(Debug::Logger::Type::error, "couldn't remove animation with name: " + name + " ,name doesn't exist", true);
 			return false;
 		}
 
 		if (currentAnim == name)
 		{
-			Debug::Logger::init().Log(Debug::Logger::Type::warning, "couldn't remove animation with name: " + name + " ,it is the current animation", true);
+			Debug::Logger::init().Log(Debug::Logger::Type::error, "couldn't remove animation with name: " + name + " ,it is the current animation", true);
 			return false;
 		}
 
@@ -76,12 +79,12 @@ namespace VEngine
 		return true;
 	}
 
-	bool AnimSprite::isValidAnim(std::string name)
+	bool AnimSprite::isValidAnim(const std::string& name) const
 	{
 		return (animations.find(name) != animations.end());
 	}
 
-	Resources::animation* AnimSprite::getAnim(std::string name)
+	const animation* AnimSprite::getAnim(const std::string& name)
 	{
 		auto result = animations.find(name);
 		if (result == animations.end())
@@ -93,11 +96,21 @@ namespace VEngine
 		return result->second;
 	}
 
-	void AnimSprite::playAnim(std::string name)
+	const sf::Sprite* AnimSprite::getSprite() const
+	{
+		return &sprite;
+	}
+
+	void AnimSprite::playAnim(const std::string& name, bool forcePlay)
 	{
 		if (animations.find(name) == animations.end())
 		{
 			Debug::Logger::init().Log(Debug::Logger::Type::warning, "couldn't play animation with name: " + name + " ,name doesn't exist", true);
+			return;
+		}
+
+		if (forcePlay == false && currentAnim == name)
+		{
 			return;
 		}
 
@@ -109,23 +122,41 @@ namespace VEngine
 		clock.restart();
 	}
 
-	std::string AnimSprite::getCurrentAnim()
+	std::string AnimSprite::getCurrentAnim() const
 	{
 		return currentAnim;
 	}
 
-	bool AnimSprite::isPlaying()
+	sf::Uint16 AnimSprite::getCurrentFrameIndex() const
+	{
+		return animIndex;
+	}
+
+	sf::FloatRect AnimSprite::getLocalBounds() const
+	{
+		sf::Vector2u size(0,0);
+		if (sprite.getTexture() != nullptr)
+			size = sprite.getTexture()->getSize();
+
+		return sf::FloatRect(0,0,size.x,size.y);
+	}
+
+	sf::FloatRect AnimSprite::getGlobalBounds() const
+	{
+		return sprite.getTransform().transformRect(getLocalBounds());
+	}
+
+	bool AnimSprite::isPlaying() const
 	{
 		return isPlayingVar;
 	}
 
 	void AnimSprite::stopAnim()
 	{
-		//TODO: the sprite is not changed so it will still have the texture from the last frame of previous animation, this can cause problems if last animation was deleted right after
-		//we can just set texture to null since sprite::draw() checks for texture validity before drawing
-		sprite.setTexture(sf::Texture()); // but this is expensive
 		currentAnim.clear();
 		isPlayingVar = false;
+		sprite.move(-currentOffset);
+		currentOffset = sf::Vector2f(0,0);
 		animIndex = 0;
 	}
 
@@ -133,8 +164,6 @@ namespace VEngine
 
 	void AnimSprite::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
-		states.transform *= getTransform();
-
 		target.draw(sprite,states);
 	}
 }

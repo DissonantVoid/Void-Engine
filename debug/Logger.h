@@ -3,6 +3,8 @@
 #include <string>
 #include <fstream>
 
+#include "Engine/Config.h"
+
 namespace VEngine
 {
 	namespace Debug
@@ -17,7 +19,7 @@ namespace VEngine
 
 			static Logger& init() { static Logger instance; return instance; }
 
-			void Log(Type type, std::string message, bool isEngine = false);
+			void Log(Type type, const std::string& message, bool isEngine = false);
 
 		private:
 			std::ofstream file;

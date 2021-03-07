@@ -13,17 +13,18 @@ namespace VEngine
 
 		void reset();
 
-		bool isKeyPressed(sf::Keyboard::Key key);
-		bool isKeysDown(sf::Keyboard::Key key);
-		bool isKeysRelease(sf::Keyboard::Key key);
+		bool isKeyPressed(sf::Keyboard::Key key)const;
+		bool isKeysDown(sf::Keyboard::Key key)const;
+		bool isKeysRelease(sf::Keyboard::Key key)const;
 
-		bool isMousePressed(sf::Mouse::Button button);
-		bool isMouseDown(sf::Mouse::Button button);
-		bool isMouseRelease(sf::Mouse::Button button);
+		bool isMousePressed(sf::Mouse::Button button)const;
+		bool isMouseDown(sf::Mouse::Button button)const;
+		bool isMouseRelease(sf::Mouse::Button button)const;
 
-		int8_t getMouseWheel();
-		sf::Vector2i getMouseWindowPos();
-		sf::Vector2f getMouseViewPos(sf::View& view);
+		int getMouseWheel()const;
+		const sf::Vector2i getMouseWindowPos()const;
+		const sf::Vector2f getMouseViewPos()const;
+		const sf::Vector2f getMouseViewPos(const sf::View& view)const;
 
 	private:
 		enum inputType
@@ -34,7 +35,7 @@ namespace VEngine
 		std::list<std::pair<sf::Keyboard::Key, inputType>> keys;
 		std::list<std::pair<sf::Mouse::Button, inputType>> mouseButtons;
 
-		int8_t mouseWheel = 0;
+		int mouseWheel;
 		sf::RenderWindow* window;
 
 		InputHandler();

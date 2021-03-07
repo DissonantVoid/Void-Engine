@@ -11,12 +11,12 @@ namespace VEngine
 		public:
 			static FontHandler& init() { static FontHandler instance; return instance; }
 
-			bool addFont(std::string name, sf::Font* font);
-			bool addFont(std::string name, std::string path);
-			bool duplicateFont(std::string originalName, std::string newName);
-			bool isFont(std::string name);
-			const sf::Font* getFont(std::string name);
-			bool removeFont(std::string name);
+			bool addFont(const std::string& name, sf::Font* font);
+			bool addFont(const std::string& name, const std::string& path);
+			bool duplicateFont(const std::string& originalName, const std::string& newName);
+			bool isFont(const std::string& name)const;
+			const sf::Font* getFont(const std::string& name)const;
+			bool removeFont(const std::string& name);
 
 		private:
 

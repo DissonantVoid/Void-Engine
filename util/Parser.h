@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace VEngine::Resources
+namespace VEngine
 {
 	struct animation;
 }
@@ -11,7 +11,7 @@ namespace VEngine
 {
 	namespace Util
 	{
-		bool ParseFileAnimation(std::string path, Resources::animation* animation);
+		bool ParseFileAnimation(std::string path, animation* animation);
 
 		//save and load scene
 	}

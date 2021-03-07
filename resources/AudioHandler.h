@@ -11,17 +11,17 @@ namespace VEngine
 		public:
 			static AudioHandler& init() { static AudioHandler instance; return instance; }
 
-			bool addSound(std::string name, sf::SoundBuffer* buffer);
-			bool addSound(std::string name, std::string path);
-			bool addMusic(std::string name, std::string path);
-			bool duplicateSound(std::string originalName, std::string newName);
-			bool duplicateMusic(std::string originalName, std::string newName);
-			bool isSound(std::string name);
-			bool isMusic(std::string name);
-			const sf::SoundBuffer* getSound(std::string name);
-			const std::string* getMusicPath(std::string name);
-			bool removeSound(std::string name);
-			bool removeMusic(std::string name);
+			bool addSound(const std::string& name, sf::SoundBuffer* buffer);
+			bool addSound(const std::string& name, const std::string& path);
+			bool addMusic(const std::string& name, const std::string& path);
+			bool duplicateSound(const std::string& originalName, const std::string& newName);
+			bool duplicateMusic(const std::string& originalName, const std::string& newName);
+			bool isSound(const std::string& name)const;
+			bool isMusic(const std::string& name)const;
+			const sf::SoundBuffer* getSound(const std::string& name)const;
+			const std::string* getMusicPath(const std::string& name)const;
+			bool removeSound(const std::string& name);
+			bool removeMusic(const std::string& name);
 
 		private:
 

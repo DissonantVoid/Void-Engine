@@ -5,9 +5,9 @@
 namespace VEngine
 {
 	Event::Event(EventType type)
-		: Type(type)
+		:Type(type)
 	{
-
+		
 	}
 
 	void Event::submite()

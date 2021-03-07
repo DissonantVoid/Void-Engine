@@ -8,20 +8,20 @@ namespace VEngine
 	namespace Resources
 	{
 
-		bool AudioHandler::addSound(std::string name, sf::SoundBuffer* buffer)
+		bool AudioHandler::addSound(const std::string& name, sf::SoundBuffer* buffer)
 		{
 			VE_PROFILE_FUNC;
 
 			if (buffer == nullptr)
 			{
-				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to add sound buffer with name: " + name + ", it's nullptr (texture is now deleted)", true);
+				Debug::Logger::init().Log(Debug::Logger::Type::error, "unable to add sound buffer with name: " + name + ", it's nullptr (texture is now deleted)", true);
 				delete buffer;
 				return false;
 			}
 
 			if (soundBuffers.find(name) != soundBuffers.end())
 			{
-				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to add sound buffer with name: " + name + ", name already exist (buffer is now deleted)", true);
+				Debug::Logger::init().Log(Debug::Logger::Type::error, "unable to add sound buffer with name: " + name + ", name already exist (buffer is now deleted)", true);
 				delete buffer;
 				return false;
 			}
@@ -29,19 +29,19 @@ namespace VEngine
 			return true;
 		}
 
-		bool AudioHandler::addSound(std::string name, std::string path)
+		bool AudioHandler::addSound(const std::string& name, const std::string& path)
 		{
 			VE_PROFILE_FUNC;
 			if (soundBuffers.find(name) != soundBuffers.end())
 			{
-				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to add sound buffer with name: " + name + ", name already exist", true);
+				Debug::Logger::init().Log(Debug::Logger::Type::error, "unable to add sound buffer with name: " + name + ", name already exist", true);
 				return false;
 			}
 
 			sf::SoundBuffer* buffer = new sf::SoundBuffer;
 			if (buffer->loadFromFile(path) == false)
 			{
-				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to add sound buffer with name: " + name + ", file path may be invalid", true);
+				Debug::Logger::init().Log(Debug::Logger::Type::error, "unable to add sound buffer with name: " + name + ", file path may be invalid", true);
 				delete buffer;
 				return false;
 			}
@@ -50,19 +50,19 @@ namespace VEngine
 			return true;
 		}
 
-		bool AudioHandler::addMusic(std::string name, std::string path)
+		bool AudioHandler::addMusic(const std::string& name, const std::string& path)
 		{
 			VE_PROFILE_FUNC;
 			if (musicPaths.find(name) != musicPaths.end())
 			{
-				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to add music with name: " + name + ", name already exist", true);
+				Debug::Logger::init().Log(Debug::Logger::Type::error, "unable to add music with name: " + name + ", name already exist", true);
 				return false;
 			}
 
 			sf::Music pathCheck;
 			if (pathCheck.openFromFile(path) == false)
 			{
-				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to add music with name: " + name + ", file path may be invalid", true);
+				Debug::Logger::init().Log(Debug::Logger::Type::error, "unable to add music with name: " + name + ", file path may be invalid", true);
 				return false;
 			}
 
@@ -72,18 +72,18 @@ namespace VEngine
 			return true;
 		}
 
-		bool AudioHandler::duplicateSound(std::string originalName, std::string newName)
+		bool AudioHandler::duplicateSound(const std::string& originalName, const std::string& newName)
 		{
 			VE_PROFILE_FUNC;
 			if (soundBuffers.find(originalName) != soundBuffers.end())
 			{
-				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to duplicate sound with names: " + originalName + " - " + newName + ", originalName already exist", true);
+				Debug::Logger::init().Log(Debug::Logger::Type::error, "unable to duplicate sound with names: " + originalName + " - " + newName + ", originalName already exist", true);
 				return false;
 			}
 
 			if (soundBuffers.find(newName) != soundBuffers.end())
 			{
-				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to duplicate sound with names: " + originalName + " - " + newName + ", newName already exist", true);
+				Debug::Logger::init().Log(Debug::Logger::Type::error, "unable to duplicate sound with names: " + originalName + " - " + newName + ", newName already exist", true);
 				return false;
 			}
 
@@ -92,18 +92,18 @@ namespace VEngine
 			return true;
 		}
 
-		bool AudioHandler::duplicateMusic(std::string originalName, std::string newName)
+		bool AudioHandler::duplicateMusic(const std::string& originalName, const std::string& newName)
 		{
 			VE_PROFILE_FUNC;
 			if (musicPaths.find(originalName) != musicPaths.end())
 			{
-				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to duplicate music with names: " + originalName + " - " + newName + ", originalName already exist", true);
+				Debug::Logger::init().Log(Debug::Logger::Type::error, "unable to duplicate music with names: " + originalName + " - " + newName + ", originalName already exist", true);
 				return false;
 			}
 
 			if (musicPaths.find(newName) != musicPaths.end())
 			{
-				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to duplicate music with names: " + originalName + " - " + newName + ", newName already exist", true);
+				Debug::Logger::init().Log(Debug::Logger::Type::error, "unable to duplicate music with names: " + originalName + " - " + newName + ", newName already exist", true);
 				return false;
 			}
 
@@ -112,20 +112,20 @@ namespace VEngine
 			return true;
 		}
 
-		bool AudioHandler::isSound(std::string name)
+		bool AudioHandler::isSound(const std::string& name) const
 		{
 			return (soundBuffers.find(name) != soundBuffers.end());
 		}
 
-		bool AudioHandler::isMusic(std::string name)
+		bool AudioHandler::isMusic(const std::string& name) const
 		{
 			return (musicPaths.find(name) != musicPaths.end());
 		}
 
-		const sf::SoundBuffer* AudioHandler::getSound(std::string name)
+		const sf::SoundBuffer* AudioHandler::getSound(const std::string& name) const
 		{
 			VE_PROFILE_FUNC;
-			std::unordered_map<std::string, sf::SoundBuffer*>::iterator result = soundBuffers.find(name);
+			auto result = soundBuffers.find(name);
 			if (result != soundBuffers.end())
 				return result->second;
 
@@ -133,10 +133,10 @@ namespace VEngine
 			return nullptr;
 		}
 
-		const std::string* AudioHandler::getMusicPath(std::string name)
+		const std::string* AudioHandler::getMusicPath(const std::string& name) const
 		{
 			VE_PROFILE_FUNC;
-			std::unordered_map<std::string, std::string*>::iterator result = musicPaths.find(name);
+			auto result = musicPaths.find(name);
 			if (result != musicPaths.end())
 				return result->second;
 
@@ -144,7 +144,7 @@ namespace VEngine
 			return nullptr;
 		}
 
-		bool AudioHandler::removeSound(std::string name)
+		bool AudioHandler::removeSound(const std::string& name)
 		{
 			VE_PROFILE_FUNC;
 			if (soundBuffers.find(name) != soundBuffers.end())
@@ -154,11 +154,11 @@ namespace VEngine
 				return true;
 			}
 
-			Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to remove sound buffer with name: " + name + ", doesn't exist", true);
+			Debug::Logger::init().Log(Debug::Logger::Type::error, "unable to remove sound buffer with name: " + name + ", doesn't exist", true);
 			return false;
 		}
 
-		bool AudioHandler::removeMusic(std::string name)
+		bool AudioHandler::removeMusic(const std::string& name)
 		{
 			VE_PROFILE_FUNC;
 			if (musicPaths.find(name) != musicPaths.end())
@@ -168,7 +168,7 @@ namespace VEngine
 				return true;
 			}
 
-			Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to remove music with name: " + name + ", doesn't exist", true);
+			Debug::Logger::init().Log(Debug::Logger::Type::error, "unable to remove music with name: " + name + ", doesn't exist", true);
 			return false;
 		}
 
@@ -181,7 +181,6 @@ namespace VEngine
 
 		AudioHandler::~AudioHandler()
 		{
-			VE_PROFILE_FUNC_ONCE;
 			for (auto& soundB : soundBuffers)
 				delete soundB.second;
 

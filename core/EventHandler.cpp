@@ -5,7 +5,6 @@
 #include "Engine/event/EventQueue.h"
 
 #include "Engine/debug/ProfilerSample.h"
-#include "Engine/debug/Logger.h"
 
 namespace VEngine
 {

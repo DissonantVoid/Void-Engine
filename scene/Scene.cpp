@@ -1,7 +1,6 @@
 #include "Scene.h"
 
 #include "Engine/core/Window.h"
-#include "Engine/debug/ProfilerSample.h"
 
 namespace VEngine
 {
@@ -24,7 +23,7 @@ namespace VEngine
 		VE_PROFILE_FUNC;
 		if (entities.find(name) != entities.end())
 		{
-			Debug::Logger::init().Log(Debug::Logger::Type::warning, "couldn't add entity with name: " + name + " ,already exist (the entity pointer is now deleted)", true);
+			Debug::Logger::init().Log(Debug::Logger::Type::error, "couldn't add entity with name: " + name + " ,already exist (the entity pointer is now deleted)", true);
 			delete entity;
 			return false;
 		}
@@ -35,6 +34,24 @@ namespace VEngine
 		return true;
 	}
 
+	Entity* Scene::getEntity(std::string name)
+	{
+		VE_PROFILE_FUNC;
+		std::unordered_map<std::string, Entity*>::iterator result = entities.find(name);
+		if (result == entities.end())
+		{
+			Debug::Logger::init().Log(Debug::Logger::Type::warning, "entity with name: " + name + " doesn't exist in the scene named: " + this->name, true);
+			return nullptr;
+		}
+
+		return result->second;
+	}
+
+	sf::View& Scene::getView()
+	{
+		return view;
+	}
+
 	bool Scene::removeEntity(std::string name)
 	{
 		VE_PROFILE_FUNC;
@@ -42,7 +59,7 @@ namespace VEngine
 
 		if (result == entities.end())
 		{
-			Debug::Logger::init().Log(Debug::Logger::Type::warning, "couldn't remove entity with name: " + name + " ,it doesn't exist", true);
+			Debug::Logger::init().Log(Debug::Logger::Type::error, "couldn't remove entity with name: " + name + " ,it doesn't exist", true);
 			return false;
 		}
 		delete result->second;

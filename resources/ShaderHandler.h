@@ -18,13 +18,13 @@ namespace VEngine
 		public:
 			static ShaderHandler& init() { static ShaderHandler instance; return instance; }
 
-			bool addShader(std::string name, sf::Shader* shader);
+			bool addShader(const std::string& name, sf::Shader* shader);
 			//NOTE if only one of the shaders is to be set, make sure the other param is empty string ""
-			bool addShader(std::string name, std::string vertexpath, std::string fragementpath);
-			bool addShaderString(std::string name, std::string vertexData, std::string fragmentData);
-			bool isShader(std::string name);
-			const sf::Shader* getShader(std::string name);
-			bool removeShader(std::string name);
+			bool addShader(const std::string& name, const std::string& vertexpath, const std::string& fragementpath);
+			bool addShaderString(const std::string& name, const std::string& vertexData, const std::string& fragmentData);
+			bool isShader(const std::string& name)const;
+			const sf::Shader* getShader(const std::string& name)const;
+			bool removeShader(const std::string& name);
 
 		private:
 

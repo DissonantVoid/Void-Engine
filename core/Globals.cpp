@@ -5,6 +5,7 @@ namespace VEngine
 	namespace Global
 	{
 		float deltaTime = 0;
+		float unscaledDeltaTime = 0;
 		unsigned int FPS = 0;
 		unsigned int AVERAGE_FPS = 0;
 	}

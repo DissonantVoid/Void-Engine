@@ -21,10 +21,10 @@ namespace VEngine
 		bool addAudio(std::string name, sf::SoundSource* sound);
 		bool removeAudio(std::string name);
 
-		bool isValid(std::string name);
+		bool isValid(std::string name)const;
 
 		template<typename as>
-		as* getAudio(std::string name)
+		as* getAudio(std::string name) const
 		{
 			auto result = audios.find(name);
 			if (result == audios.end())

@@ -12,7 +12,7 @@ namespace VEngine
 			animationData(AnimSprite* animatedObject, sf::Uint8 drawLayer, bool shouldDraw, sf::RenderStates renderState)
 				: animatedSprite(animatedObject), drawLayer(drawLayer), renderState(renderState), shouldDraw(shouldDraw) {}
 
-			AnimSprite* animatedSprite = nullptr; //TODO: since we may have animated text as well, consider a base class for animated objects
+			AnimSprite* animatedSprite = nullptr;
 			sf::RenderStates renderState;
 			sf::Uint8 drawLayer;
 			bool shouldDraw;
@@ -28,23 +28,11 @@ namespace VEngine
 		bool addAnimObject(std::string name, AnimSprite* animatedObject, sf::Uint8 drawLayer, bool hide = false, sf::RenderStates states = sf::RenderStates());
 		bool removeAnimObject(std::string name);
 
-		bool isValid(std::string name);
+		bool isValid(std::string name)const;
 
-		template<typename as>
-		as* getDrawable(std::string name)
-		{
-			auto* data = getDrawableData(name);
-			if (data == nullptr)
-				return nullptr;
+		AnimSprite* getAnimatedDrawable(std::string name) const;
 
-			auto* castedData = dynamic_cast<as*>(data->animatedSprite);
-			if (castedData == nullptr)
-				Debug::Logger::init().Log(Debug::Logger::Type::warning, "animatorEntity couldn't cast Data with name: " + name + " ,into the given type", true);
-
-			return castedData;
-		}
-
-		animationData* getDrawableData(std::string name);
+		animationData* getDrawableData(std::string name) const;
 
 	private:
 		std::unordered_map<std::string, animationData*> animObjects;

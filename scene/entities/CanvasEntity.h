@@ -29,13 +29,13 @@ namespace VEngine
 		void update() override;
 		void handleEvent(Event event) override;
 
-		bool addDrawable(std::string name,sf::Drawable* drawable,sf::Uint8 drawLayer,bool hide = false,sf::RenderStates states = sf::RenderStates());
-		bool removeDrawable(std::string name);
+		bool addDrawable(const std::string& name,sf::Drawable* drawable,sf::Uint8 drawLayer,bool hide = false,sf::RenderStates states = sf::RenderStates());
+		bool removeDrawable(const std::string& name);
 
-		bool isValid(std::string name);
+		bool isValid(const std::string& name)const;
 
 		template<typename as>
-		as* getDrawable(std::string name)
+		as* getDrawable(const std::string& name) const
 		{
 			auto* data = getDrawableData(name);
 			if (data == nullptr)
@@ -48,7 +48,7 @@ namespace VEngine
 			return castedData;
 		}
 
-		canvasDrawData* getDrawableData(std::string name);
+		canvasDrawData* getDrawableData(const std::string& name) const;
 
 	private:
 		std::unordered_map<std::string, canvasDrawData*> drawables;

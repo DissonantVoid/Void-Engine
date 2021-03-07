@@ -1,12 +1,13 @@
 #include "Logger.h"
 
 #include <iostream>
-#include <Windows.h> //TODO: consider putting this in a special VWindow.h file where some macros are defined before
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
 
 #include "Engine/Config.h"
 #include "Engine/debug/ProfilerSample.h"
 
-#if defined (VE_FILE_LOG)
+#if VE_FILE_LOG == true
 	#define AppendText(t,s) s.append(t)
 #else
 	#define AppendText(t,s)
@@ -16,16 +17,17 @@ namespace VEngine
 {
 	namespace Debug
 	{
-#if VE_DEBUG == true
 
-		void Logger::Log(Type type, std::string message, bool isEngine)
+		void Logger::Log(Type type, const std::string& message, bool isEngine)
 		{
+
+#if VE_DEBUG == true
 			VE_PROFILE_FUNC;
 			std::string fullMessage;
 			
 			if (isEngine)
 			{
-				if (!VE_ENGINE_LOG || (type == Type::warning && !VE_ENGINE_LOG_WARNINGS) || (type == Type::info && !VE_ENGINE_LOG_INFO))
+				if (!VE_ENGINE_LOG)
 					return;
 
 				changeConsoleColor(5);
@@ -45,28 +47,26 @@ namespace VEngine
 			
 			changeConsoleColor(7);
 			std::cout << message << '\n';
-			AppendText(mType + message + '\n', fullMessage);
+			AppendText(mType + std::move(message) + '\n', fullMessage);
 
-			if (VE_FILE_LOG && isEngine && file.is_open()) file << fullMessage;
-	}
-
-#else
-		void Logger::Log(Type type, std::string message, bool isEngine) {};
+			if (VE_FILE_LOG && isEngine && file.is_open()) file << std::move(fullMessage);
 #endif  //VE_DEBUG
+
+		}
 
 		//private
 		
 		Logger::Logger()
 		{
+#if VE_DEBUG == true 
 			static_cast<HANDLE>(stdHandle);
 			stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+#endif
 
-			if (VE_DEBUG == true && VE_FILE_LOG)
-			{
-				file.open("Engine_Logs.txt", std::ios::out | std::ofstream::trunc);
-				if (file.is_open() == false) Log(Type::error,"unable to open the log file for writing",true);
-			
-			}
+#if VE_FILE_LOG == true
+			file.open("Engine_Logs.txt", std::ios::out | std::ofstream::trunc);
+			if (file.is_open() == false) Log(Type::error,"unable to open the log file for writing",true);
+#endif
 		}
 
 		Logger::~Logger()

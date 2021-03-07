@@ -2,12 +2,18 @@
 
 #include "SFML/Graphics.hpp"
 
-class Scene;
+namespace VEngine
+{
+	class Scene;
+	class Entity;
+	class Collider;
+}
 
 namespace VEngine
 {
 	class Event
 	{
+		friend class PhysicsHandler;
 	private:
 
 		struct engineStruct
@@ -17,9 +23,19 @@ namespace VEngine
 
 		struct drawStruct
 		{
-			sf::Drawable* drawable = nullptr;
+			const sf::Drawable* drawable = nullptr;
 			sf::RenderStates renderState;
 			sf::Uint8 drawLayer;
+		};
+
+		struct physicsCollisionStruct
+		{
+			sf::String thisEnttName;
+			sf::Vector2f position;
+			sf::Vector2u size;
+			
+			sf::String otherEnttName;
+			sf::Uint8 colliderID;
 		};
 
 		struct sfmlStruct
@@ -29,21 +45,24 @@ namespace VEngine
 
 		struct costumStruct
 		{
-			std::string message;
-			sf::Uint64 bitsData;
+			sf::String message;
+			sf::Uint16 bitsData;
 		};
 
 	public:
 		enum class EventType
 		{
 			EngineQuit,
-			RendererDraw,
+			EngineRendererDraw, EngineRendererDrawUI,
+			EnginePhysicsCollision,
+			PhysicsCollision, PhysicsMouseCollision,
 			SFML,
 			Costum
 		}Type;
 
 		engineStruct engineEvent;
 		drawStruct drawEvent;
+		physicsCollisionStruct physicsCollisionEvent;
 		sfmlStruct sfmlEvent;
 		costumStruct costumEvent;
 

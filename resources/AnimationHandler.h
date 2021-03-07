@@ -5,39 +5,27 @@
 
 #include "SFML/Graphics.hpp"
 
+#include "Engine/resources/SFML Extensions/AnimationData.h"
+
 namespace VEngine
 {
 	namespace Resources
 	{
-		struct animFrame
-		{
-			sf::Texture *texture;
-			float delay;
-			sf::Vector2f offset; //in case of texture being bigger/smaller than others and need to be adjusted
-		};
-
-		struct animation
-		{
-			bool isLoop;
-			std::vector<animFrame> frames;
-		};
-
 		class AnimationHandler
 		{
 		public:
 			static AnimationHandler& init() { static AnimationHandler instance; return instance;}
 
-			bool addAnimation(std::string name, animation* animation);//should be heap "new" allocated
-			bool addAnimation(std::string name, bool isLoop, std::vector<animFrame> frames);
-			bool addAnimation(std::string name,std::string path);
-			bool duplicateTexture(std::string originalName, std::string newName);
-			bool isAnimation(std::string name);
-			const animation* getAnimation(std::string name);
-			animation* getAnimationMd(std::string name);
-			bool removeAnimation(std::string name);
+			bool addAnimation(const std::string& name, animation* animation);//should be heap "new" allocated
+			bool addAnimation(const std::string& name, bool isLoop, std::vector<animFrame> frames);
+			bool addAnimation(const std::string& name,std::string path);
+			bool duplicateTexture(const std::string& originalName, const std::string& newName);
+			bool isAnimation(const std::string& name)const;
+			const animation* getAnimation(const std::string& name)const;
+			animation* getAnimationMd(const std::string& name);
+			bool removeAnimation(const std::string& name);
 
 		private:
-
 			std::unordered_map<std::string, animation*> animations;
 
 			AnimationHandler();

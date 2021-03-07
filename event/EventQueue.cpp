@@ -2,6 +2,7 @@
 
 #include "Engine/core/Engine.h"
 #include "Engine/core/Renderer.h"
+#include "Engine/core/PhysicsHandler.h"
 #include "Engine/scene/SceneHandler.h"
 
 #include "Engine/debug/ProfilerSample.h"
@@ -21,8 +22,20 @@ namespace VEngine
 			case EType::EngineQuit:
 				Engine::init().handleEvent(event);
 				break;
-			case EType::RendererDraw:
+			case EType::EngineRendererDraw:
+			case EType::EngineRendererDrawUI:
 				Renderer::init().handleEvent(event);
+				break;
+			case EType::EnginePhysicsCollision:
+				PhysicsHandler::init().handleEvent(event);
+				break;
+			case EType::PhysicsCollision:
+			case EType::PhysicsMouseCollision:
+				{
+					Entity* entity = SceneHandler::init().getCurrentScene()->getEntity(event.physicsCollisionEvent.thisEnttName);
+					if (entity == nullptr) break;
+					entity->handleEvent(event);
+				}
 				break;
 			case EType::SFML:
 				VEngine::Engine::init().getClientGame()->handleEvent(event);
@@ -53,7 +66,7 @@ namespace VEngine
 
 	void EventQueue::pushEvent(Event event)
 	{
-		events.push(event);
+		events.push(std::move(event));
 	}
 
 }

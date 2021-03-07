@@ -4,6 +4,7 @@
 #include "Engine/core/Window.h"
 #include "Engine/core/EventHandler.h"
 #include "Engine/event/EventQueue.h"
+#include "Engine/core/PhysicsHandler.h"
 #include "Engine/core/InputHandler.h"
 #include "Engine/core/Renderer.h"
 #include "Engine/scene/SceneHandler.h"
@@ -21,7 +22,7 @@ namespace VEngine
 		}
 		if (game == nullptr)
 		{
-			Debug::Logger::init().Log(Debug::Logger::Type::error, "subnitted Game class is nullptr", true);
+			Debug::Logger::init().Log(Debug::Logger::Type::error, "submitted Game class is nullptr", true);
 			return;
 		}
 
@@ -38,7 +39,7 @@ namespace VEngine
 
 	Game* Engine::getClientGame()
 	{
-		if (clientGame == nullptr) Debug::Logger::init().Log(Debug::Logger::Type::warning,"getting client game as a nullptr",true);
+		if (clientGame == nullptr) Debug::Logger::init().Log(Debug::Logger::Type::warning,"returning client game as a nullptr",true);
 		return clientGame;
 	}
 
@@ -52,6 +53,22 @@ namespace VEngine
 			isRunning = false;
 			break;
 		}
+	}
+
+	void Engine::scaleTime(float scale)
+	{
+		timeScale = scale;
+	}
+	
+	void Engine::setTargetFramerate(sf::Uint8 FPS)
+	{
+		targetFramerate = FPS;
+		isTargetFPSSet = true;
+	}
+	
+	void Engine::unsetTargetFramerate()
+	{
+		isTargetFPSSet = false;
 	}
 
 	//private
@@ -79,8 +96,9 @@ namespace VEngine
 
 		while (isRunning)
 		{
-			Global::deltaTime = dtClock.restart().asSeconds();
-			framesPerSecond++;
+			Global::unscaledDeltaTime = dtClock.restart().asSeconds();
+			Global::deltaTime = Global::unscaledDeltaTime * timeScale;
+
 			if (fpsClock.getElapsedTime().asSeconds() >= 1)
 			{
 				Global::FPS = framesPerSecond;
@@ -95,11 +113,15 @@ namespace VEngine
 				fpsClock.restart();
 			}
 			
+			if (isTargetFPSSet && (framesPerSecond >= targetFramerate)) continue; //TODO: fix targetFramerate, currently when set to 30 for example the loop will run smoothly for 30 iterations and then stops for the rest of the second, which give the impression of 1 frame per 2 seconds or so, we need to fix the spacing
+			framesPerSecond++;
+
 			InputHandler::init().reset();
 			EventHandler::init().handleEvents();
 
 			clientGame->update();
 			SceneHandler::init().update();
+			PhysicsHandler::init().update();
 			EventQueue::init().handleEvents();
 
 			Renderer::init().draw();

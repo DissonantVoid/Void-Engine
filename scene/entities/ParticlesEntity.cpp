@@ -19,21 +19,22 @@ namespace VEngine
 	void ParticlesEntity::particle::setSprite(const sf::Texture* texture)
 	{
 		isAnimated = false;
-		this->sprite.setTexture(*texture);
+		this->sprite.setTexture(*texture, true);
 	}
 	
-	void ParticlesEntity::particle::setSprite(const Resources::animation* animation)
+	void ParticlesEntity::particle::setSprite(const VEngine::animation* animation)
 	{
 		isAnimated = true;
 		this->animation = animation;
 	}
 
-	void ParticlesEntity::particle::set(sf::Vector2f position, sf::Vector2f direction, float speed, float lifeTime, sf::Uint8 drawLayer)
+	void ParticlesEntity::particle::set(sf::Vector2f position, sf::Vector2f direction, float speed, float lifeTime, sf::Uint8 drawLayer, sf::RenderStates states)
 	{
 		this->direction = direction;
 		this->speed = speed;
 		this->lifeTime = lifeTime;
 		this->drawLayer = drawLayer;
+		this->states = states;
 
 		sprite.setPosition(position);
 
@@ -48,7 +49,7 @@ namespace VEngine
 
 		sprite.move(direction * speed * Global::deltaTime);
 
-		if (isAnimated && !isAnimFinished &&
+		if (isAnimated && !isAnimFinished && //either frame 0 or time for next animation
 			[&]() -> bool
 		{
 			if(currentAnimIndex == 0) return true;
@@ -60,20 +61,22 @@ namespace VEngine
 			if (currentAnimIndex >= animation->frames.size())
 			{
 				if (animation->isLoop)
+				{
+					currentOffset = sf::Vector2f(0,0);
 					currentAnimIndex = 0;
+				}
 				else
 				{
-					sprite.setPosition(-currentOffset);
-					currentOffset = sf::Vector2f(0,0);
 					isAnimFinished = true;
 				}
+				sprite.move(-currentOffset);
 				return;
 			}
 
 			sprite.setTexture(*animation->frames[currentAnimIndex].texture, true);
 			sprite.move(-currentOffset);
-			sprite.move(animation->frames[currentAnimIndex].offset);
 			currentOffset = animation->frames[currentAnimIndex].offset;
+			sprite.move(currentOffset);
 
 			currentAnimIndex++;
 			animationClock.restart();
@@ -123,7 +126,7 @@ namespace VEngine
 
 	}
 
-	void ParticlesEntity::addAnimation(std::string name, const Resources::animation* animation)
+	void ParticlesEntity::addAnimation(std::string name, const animation* animation)
 	{
 		if (animation == nullptr)
 		{
@@ -238,7 +241,7 @@ namespace VEngine
 				}
 
 				int index = Util::Random::init().getInt(0, animations.size() - 1);
-				std::map<std::string, const Resources::animation*>::iterator it = animations.begin();
+				std::map<std::string, const animation*>::iterator it = animations.begin();
 				for (int i = 0; i < index; i++)
 					it++;
 
@@ -339,9 +342,10 @@ namespace VEngine
 				it = particles.erase(it);
 			else
 			{
-				Event event(Event::EventType::RendererDraw);
+				Event event(Event::EventType::EngineRendererDraw);
 				event.drawEvent.drawable = &it->sprite;
 				event.drawEvent.drawLayer = it->drawLayer;
+				event.drawEvent.renderState = it->states;
 				event.submite();
 				it++;
 			}

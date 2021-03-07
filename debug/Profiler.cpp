@@ -9,60 +9,52 @@ namespace VEngine
 {
 	namespace Debug
 	{
-		
-		void Profiler::addInfo(std::string funcName, float time, bool repeated) //TODO: for non repeated samples, this will still be called a lot of times which is bad, also macros gards are scatered and this function don't have/need one, but macros should be more ordered
+		void Profiler::addInfo(const std::string& funcName, float time)
 		{
-			if (repeated == false)
-			{
-				for (auto it = infos.begin(); it != infos.end(); it++)
-				{
-					if (it->second == funcName) return;
-				}
-			}
-
-			infos.emplace(std::make_pair(time, funcName));
+			infos.emplace(std::make_pair(time, std::move(funcName)));
 		}
 
-		void Profiler::logToFile(std::string filter)
+		void Profiler::logToFile(const std::string& filter)//TODO: the profiler gets a lot of functions per frame which causes a big memory usage in a short time, one way to fix this is to only store functions with execution time above a threshhold
 		{
-			if (!VE_PROFILER || (!VE_DEBUG && VE_PROFILER_DEBUG_ONLY)) return;
+#if VE_PROFILER == true
 
 			std::ofstream file;
-			file.open("Engine_Profiler.txt",std::ios::out | std::ofstream::trunc);
-			
+			file.open("Engine_Profiler.txt", std::ios::out | std::ofstream::trunc);
+
 			if (!file.is_open())
 			{
-				Logger::init().Log(Logger::Type::error ,"unable to open the profiler file for writing", true);
+				Logger::init().Log(Logger::Type::error, "unable to open the profiler file for writing", true);
 				return;
 			}
 
 			int tableSpace = 50;
-			file << "funcName" << std::string((tableSpace - 8),' ') << "time to execute" << "\n\n";
+			file << "funcName" << std::string((tableSpace - 8), ' ') << "time to execute" << "\n\n";
 
 			for (auto& info : infos)
 			{
 				if (!filter.empty() && info.second != filter) continue;
 				file << info.second;
 				int size = tableSpace - info.second.size();
-				if (size > 0) file << std::string(size,' ');
+				if (size > 0) file << std::string(size, ' ');
 				file << info.first << '\n';
 			}
 
 			Logger::init().Log(Logger::Type::info, "Profiler data successfuly logged into txt", true);
 			file.close();
-
+#endif
 		}
 
 		//private
 
 		Profiler::Profiler()
 		{
-
+			
 		}
 
 		Profiler::~Profiler()
 		{
 
 		}
+
 	}
 }

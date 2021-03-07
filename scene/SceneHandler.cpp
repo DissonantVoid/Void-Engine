@@ -23,7 +23,7 @@ namespace VEngine
 		VE_PROFILE_FUNC;
 		if (scenes.find(name) != scenes.end())
 		{
-			Debug::Logger::init().Log(Debug::Logger::Type::warning,"couldn't push scene with name: " + name + " ,name already exist (scene in now deleted)",true);
+			Debug::Logger::init().Log(Debug::Logger::Type::error,"couldn't push scene with name: " + name + " ,name already exist (scene in now deleted)",true);
 			delete scene;
 			return false;
 		}
@@ -54,12 +54,12 @@ namespace VEngine
 		return nullptr;
 	}
 
-	bool SceneHandler::isScene(std::string name)
+	bool SceneHandler::isScene(std::string name)const
 	{
 		return (scenes.find(name) != scenes.end());
 	}
 
-	bool SceneHandler::isCurrentScene(std::string name)
+	bool SceneHandler::isCurrentScene(std::string name)const
 	{
 		if (currentScene == nullptr) return false;
 		return (scenes.find(name)->second == currentScene);
@@ -71,13 +71,13 @@ namespace VEngine
 		auto result = scenes.find(name);
 		if (result == scenes.end())
 		{
-			Debug::Logger::init().Log(Debug::Logger::Type::warning, "couldn't remove scene with name: " + name + " ,it doesn't exist ", true);
+			Debug::Logger::init().Log(Debug::Logger::Type::error, "couldn't remove scene with name: " + name + " ,it doesn't exist ", true);
 			return false;
 		}
 
 		if (currentScene != nullptr && result->second == currentScene)
 		{
-			Debug::Logger::init().Log(Debug::Logger::Type::warning, "couldn't remove scene with name: " + name + " ,it is the current scene ", true);
+			Debug::Logger::init().Log(Debug::Logger::Type::error, "couldn't remove scene with name: " + name + " ,it is the current scene ", true);
 			return false;
 		}
 
@@ -92,7 +92,7 @@ namespace VEngine
 		auto result = scenes.find(name);
 		if (result == scenes.end())
 		{
-			Debug::Logger::init().Log(Debug::Logger::Type::warning, "couldn't switch to scene with name: " + name + " ,it doesn't exist ", true);
+			Debug::Logger::init().Log(Debug::Logger::Type::error, "couldn't switch to scene with name: " + name + " ,it doesn't exist ", true);
 			return false;
 		}
 		
@@ -118,7 +118,7 @@ namespace VEngine
 
 	SceneHandler::~SceneHandler()
 	{
-		VE_PROFILE_FUNC_ONCE;
+		VE_PROFILE_FUNC;
 		for (std::unordered_map<std::string, Scene*>::iterator it = scenes.begin(); it != scenes.end(); it++)
 			delete it->second;
 	}

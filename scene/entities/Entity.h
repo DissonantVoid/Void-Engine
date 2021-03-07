@@ -19,7 +19,7 @@ namespace VEngine
 		virtual void update() = 0;
 		virtual void handleEvent(Event event) = 0;
 
-		const std::string& getName() { return name; }
+		const std::string& getName() const { return name; }
 
 	protected:
 		Scene* parentScene;

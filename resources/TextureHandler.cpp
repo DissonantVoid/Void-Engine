@@ -8,20 +8,20 @@ namespace VEngine
 	namespace Resources
 	{
 		
-		bool TextureHandler::addTexture(std::string name, sf::Texture* texture)
+		bool TextureHandler::addTexture(const std::string& name, sf::Texture* texture)
 		{
 			VE_PROFILE_FUNC;
 
 			if (texture == nullptr)
 			{
-				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to add texture with name: " + name + ", it's nullptr (texture is now deleted)", true);
+				Debug::Logger::init().Log(Debug::Logger::Type::error, "unable to add texture with name: " + name + ", it's nullptr (texture is now deleted)", true);
 				delete texture;
 				return false;
 			}
 
 			if (textures.find(name) != textures.end())
 			{
-				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to add texture with name: " + name + ", name already exist (texture is now deleted)", true);
+				Debug::Logger::init().Log(Debug::Logger::Type::error, "unable to add texture with name: " + name + ", name already exist (texture is now deleted)", true);
 				delete texture;
 				return false;
 			}
@@ -29,19 +29,19 @@ namespace VEngine
 			return true;
 		}
 
-		bool TextureHandler::addTexture(std::string name, std::string path, sf::IntRect rect)
+		bool TextureHandler::addTexture(const std::string& name, const std::string& path, sf::IntRect rect)
 		{
 			VE_PROFILE_FUNC;
 			if (textures.find(name) != textures.end())
 			{
-				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to add texture with name: " + name + ", name already exist", true);
+				Debug::Logger::init().Log(Debug::Logger::Type::error, "unable to add texture with name: " + name + ", name already exist", true);
 				return false;
 			}
 			
 			sf::Texture* texture = new sf::Texture;
 			if (texture->loadFromFile(path, rect) == false)
 			{
-				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to add texture with name: " + name + ", file path or rect is invalid", true);
+				Debug::Logger::init().Log(Debug::Logger::Type::error, "unable to add texture with name: " + name + ", file path or rect is invalid", true);
 				delete texture;
 				return false;
 			}
@@ -50,18 +50,18 @@ namespace VEngine
 			return true;
 		}
 
-		bool TextureHandler::duplicateTexture(std::string originalName, std::string newName)
+		bool TextureHandler::duplicateTexture(const std::string& originalName, const std::string& newName)
 		{
 			VE_PROFILE_FUNC;
 			if (textures.find(originalName) != textures.end())
 			{
-				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to duplicate texture with names: " + originalName + " - " + newName + ", originalName already exist", true);
+				Debug::Logger::init().Log(Debug::Logger::Type::error, "unable to duplicate texture with names: " + originalName + " - " + newName + ", originalName already exist", true);
 				return false;
 			}
 
 			if (textures.find(newName) != textures.end())
 			{
-				Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to duplicate texture with names: " + originalName + " - " + newName + ", newName already exist", true);
+				Debug::Logger::init().Log(Debug::Logger::Type::error, "unable to duplicate texture with names: " + originalName + " - " + newName + ", newName already exist", true);
 				return false;
 			}
 
@@ -70,17 +70,23 @@ namespace VEngine
 			return true;
 		}
 
-		bool TextureHandler::isTexture(std::string name)
+		bool TextureHandler::isTexture(const std::string& name)const
 		{
 			return (textures.find(name) != textures.end());
 		}
 
-		const sf::Texture* TextureHandler::getTexture(std::string name)
+		const sf::Texture* TextureHandler::getTexture(const std::string& name)const
 		{
-			return getTextureMd(name);
+			VE_PROFILE_FUNC;
+			auto result = textures.find(name);
+			if (result != textures.end())
+				return result->second;
+
+			Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to get const texture with name: " + name + ", doesn't exist", true);
+			return nullptr;
 		}
 		
-		sf::Texture* TextureHandler::getTextureMd(std::string name)
+		sf::Texture* TextureHandler::getTextureMd(const std::string& name)
 		{
 			VE_PROFILE_FUNC;
 			std::unordered_map<std::string, sf::Texture*>::iterator result = textures.find(name);
@@ -91,7 +97,7 @@ namespace VEngine
 			return nullptr;
 		}
 
-		bool TextureHandler::removeTexture(std::string name)
+		bool TextureHandler::removeTexture(const std::string& name)
 		{
 			VE_PROFILE_FUNC;
 			if (textures.find(name) != textures.end())
@@ -101,7 +107,7 @@ namespace VEngine
 				return true;
 			}
 
-			Debug::Logger::init().Log(Debug::Logger::Type::warning, "unable to remove texture with name: " + name + ", doesn't exist", true);
+			Debug::Logger::init().Log(Debug::Logger::Type::error, "unable to remove texture with name: " + name + ", doesn't exist", true);
 			return false;
 		}
 
@@ -114,7 +120,6 @@ namespace VEngine
 
 		TextureHandler::~TextureHandler()
 		{
-			VE_PROFILE_FUNC_ONCE;
 			for (auto& texture : textures)
 				delete texture.second;
 		}

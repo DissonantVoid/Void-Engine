@@ -5,11 +5,13 @@
 #include "Engine/debug/Logger.h"
 #include "Engine/debug/ProfilerSample.h"
 
+#include "Engine/resources/SFML Extensions/AnimationData.h"
+
 namespace VEngine
 {
 	namespace Util
 	{
-		bool ParseFileAnimation(std::string path, Resources::animation* animation)
+		bool ParseFileAnimation(std::string path, animation* animation)
 		{
 			VE_PROFILE_FUNC;
 			if (path.find('.') == -1)
@@ -19,7 +21,7 @@ namespace VEngine
 			}
 
 			std::string extension = path.substr(path.find('.') + 1);
-			if ((extension != "ANIM") && (extension != "anim") && (extension != "txt"))
+			if ((extension != "anim") && (extension != "txt"))
 			{
 				Debug::Logger::init().Log(Debug::Logger::Type::error, "utility couldn't parse file with path: " + path + " , the type doesn't match the extension [anim] or [txt]", true);
 				return false;
@@ -39,8 +41,8 @@ namespace VEngine
 			for (int i = 0; i < linesSize; i++)
 			{
 				//add a frame to the animation vec and set frame to it
-				animation->frames.push_back(Resources::animFrame());
-				Resources::animFrame *frame = &animation->frames[animation->frames.size() - 1];
+				animation->frames.push_back(animFrame());
+				animFrame *frame = &animation->frames[animation->frames.size() - 1];
 
 				//handle texture string
 				std::string texture;
